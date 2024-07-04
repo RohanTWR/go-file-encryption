@@ -8,7 +8,6 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"golang.org/x/crypto/pbkdf2"
@@ -22,14 +21,14 @@ func Encrypt(source string, password []byte) {
 		panic(err.Error())
 	}
 
-	plaintext, err := ioutil.ReadFile(source)
+	plaintext, err := os.ReadFile(source)
 
 	//handle error
 	if err != nil {
 		panic(err.Error())
 	}
 
-	//we need to use the password for some computation hence we wil lstore it in a new var
+	//we need to use the password for some computation hence we will store it in a new var
 	key := password
 
 	//Step -3: create a nonce ( a slice of byte of length 12 [0,0,0,0....0])
@@ -67,7 +66,6 @@ func Encrypt(source string, password []byte) {
 	if err != nil {
 		panic(err.Error())
 	}
-	//defer destinationFile.Close()
 
 	//Write the data
 	_, err = io.Copy(destinationFile, bytes.NewReader(ciphertext))
@@ -84,7 +82,7 @@ func Decrypt(source string, password []byte) {
 		panic(err.Error())
 	}
 
-	ciphertext, err := ioutil.ReadFile(source)
+	ciphertext, err := os.ReadFile(source)
 
 	//handle error
 	if err != nil {
@@ -94,9 +92,8 @@ func Decrypt(source string, password []byte) {
 	//we need to use the password for some computation hence we wil lstore it in a new var
 	key := password
 
-	//ciphertext without the nonce// converting last 12 digits into nonce
+	// converting last 12 digits into nonce
 	salt := ciphertext[len(ciphertext)-12:]
-
 	str := hex.EncodeToString(salt)
 
 	//use hex package to decode the string to get the nonce from the last 12 digits of the cipher
@@ -128,15 +125,13 @@ func Decrypt(source string, password []byte) {
 	}
 
 	//create a source file for encrypted data and write the data into it
-	f, err := os.Create(source)
+	destinationFile, err := os.Create(source)
 	if err != nil {
 		panic(err.Error())
 	}
-	//defer destinationFile.Close()
 
 	//write plain text to a new file
-	//Write the data
-	_, err = io.Copy(f, bytes.NewReader(plaintext))
+	_, err = io.Copy(destinationFile, bytes.NewReader(plaintext))
 	if err != nil {
 		panic(err.Error())
 	}

@@ -96,7 +96,6 @@ func decryptHandle() {
 	//step 3: ask the user for the password he had set earlier while encrypting
 	fmt.Print("Enter password")
 
-	//	password, _ := term.ReadPassword(0)
 	password, err := term.ReadPassword(int(syscall.Stdin))
 	if err != nil {
 		panic(err.Error())
@@ -107,7 +106,7 @@ func decryptHandle() {
 
 	filecrypt.Decrypt(filepath, password)
 
-	//if password is incorrect will be taken care by decrpyt function
+	//if password is incorrect will be taken care by decrypt function
 	fmt.Println("\n File successfully decrypted")
 
 }
@@ -118,8 +117,6 @@ func getPassword() []byte {
 	fmt.Print("Enter password")
 
 	//use terminal package to read the password into the password variable
-
-	//password, _ := term.ReadPassword(0)
 	password, err := term.ReadPassword(int(syscall.Stdin))
 	if err != nil {
 		panic(err.Error())
